@@ -98,7 +98,7 @@ class AnchorGenerator(nn.Module):
                 & (anchors[..., 1] >= -self.straddle_thresh)
                 & (anchors[..., 2] < image_width + self.straddle_thresh)
                 & (anchors[..., 3] < image_height + self.straddle_thresh)
-            )
+            ).to(torch.uint8)
         else:
             device = anchors.device
             inds_inside = torch.ones(anchors.shape[0], dtype=torch.uint8, device=device)

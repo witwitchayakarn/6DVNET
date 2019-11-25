@@ -136,7 +136,7 @@ def paste_mask_in_image(mask, box, im_h, im_w, thresh=0.5, padding=1):
     mask = mask[0][0]
 
     if thresh >= 0:
-        mask = mask > thresh
+        mask = (mask > thresh).to(torch.uint8)
     else:
         # for visualization and debugging, we also
         # allow it to return an unmodified mask
