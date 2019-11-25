@@ -16,6 +16,8 @@ matplotlib.use("TkAgg")
 #os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
 import torch
+torch.multiprocessing.set_sharing_strategy('file_system')
+
 from maskrcnn_benchmark.config import cfg
 from maskrcnn_benchmark.data import make_data_loader
 from maskrcnn_benchmark.solver import make_lr_scheduler
