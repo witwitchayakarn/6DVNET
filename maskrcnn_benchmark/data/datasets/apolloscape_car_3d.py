@@ -71,19 +71,23 @@ class Car3D(torch.utils.data.Dataset):
         :return:
         """
         if self.list_flag == "train":
-            train_list_all = [line.rstrip('\n')[:-4] for line in open(os.path.join(self.dataset_dir, 'split', 'train-list.txt'))]
+            fpath = os.path.join(self.dataset_dir, 'split', 'train-list.txt')
+            with open(fpath, 'r') as f:
+                train_list_all = [line.rstrip('\n')[:-4] for line in f]
             #train_list_delete = [line.rstrip('\n') for line in open(os.path.join(self.dataset_dir, 'split', 'Mesh_overlay_train_error_delete.txt'))]
             train_list_delete = []
             print("Train delete %d images" % len(train_list_delete))
 
             img_list_all = [x for x in train_list_all if x not in train_list_delete]
         elif self.list_flag == "val":
-            valid_list_all = [line.rstrip('\n')[:-4] for line in open(os.path.join(self.dataset_dir, 'split', 'validation-list.txt'))]
+            fpath = os.path.join(self.dataset_dir, 'split', 'validation-list.txt')
+            with open(fpath, 'r') as f:
+                valid_list_all = [line.rstrip('\n')[:-4] for line in f]
             #val_list_delete = [line.rstrip('\n') for line in open(os.path.join(self.dataset_dir, 'split', 'Mesh_overlay_val_error_delete.txt'))]
             val_list_delete = []
-            img_list_all = [x for x in valid_list_all if x not in val_list_delete]
             print("Val delete %d images." % len(val_list_delete))
 
+            img_list_all = [x for x in valid_list_all if x not in val_list_delete]
         elif self.list_flag == 'test':
             im_list = os.listdir(os.path.join(self.dataset_dir, 'images'))
             img_list_all = [x[:-4] for x in im_list]
@@ -104,7 +108,8 @@ class Car3D(torch.utils.data.Dataset):
             # This is a python 3 compatibility
             #car_models_all[model.name] = pickle.load(open(car_model, "rb"), encoding='latin1')
             car_model_fpath = os.path.join(model_dir, 'car_models_json', model.name+'.json')
-            car_model = json.load(open(car_model_fpath, "r"))
+            with open(car_model_fpath, 'r') as f:
+                car_model = json.load(f)
             car_model['vertices'] = np.array(car_model['vertices'])
             car_model['faces'] = np.array(car_model['faces'])
             car_models_all[model.name] = car_model
