@@ -108,8 +108,11 @@ class Car3D(torch.utils.data.Dataset):
             # This is a python 3 compatibility
             #car_models_all[model.name] = pickle.load(open(car_model, "rb"), encoding='latin1')
             car_model_fpath = os.path.join(model_dir, 'car_models_json', model.name+'.json')
-            with open(car_model_fpath, 'r') as f:
-                car_model = json.load(f)
+            f = open(car_model_fpath, 'r')
+            data = f.read()
+            f.close()
+
+            car_model = json.loads(data)
             car_model['vertices'] = np.array(car_model['vertices'])
             car_model['faces'] = np.array(car_model['faces'])
             car_models_all[model.name] = car_model
@@ -176,8 +179,11 @@ class Car3D(torch.utils.data.Dataset):
 
         car_pose_file = os.path.join(self.dataset_dir, 'car_poses', self.img_list_all[idx] + '.json')
         assert os.path.exists(car_pose_file), 'Label \'{}\' not found'.format(car_pose_file)
-        with open(car_pose_file, 'r') as f:
-            car_poses = json.load(f)
+        f = open(car_pose_file, 'r')
+        data = f.read()
+        f.close()
+
+        car_poses = json.loads(data)
 
         for i, car_pose in enumerate(car_poses):
             car_name = self.car_id2name[car_pose['car_id']].name

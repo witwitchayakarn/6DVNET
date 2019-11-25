@@ -68,7 +68,8 @@ class CarPoseVisualizer(object):
             #self.car_models[model.name] = pkl.load(open(car_model, "rb"), encoding='latin1')
             car_model_dpath = self._data_config['car_model_dir'][:-1] + '_json'
             car_model_fpath = '%s/%s.json' % (car_model_dpath, model.name)
-            car_model = json.load(open(car_model_fpath, "r"))
+            with open(car_model_fpath, 'r') as f:
+                car_model = json.load(f)
             car_model['vertices'] = np.array(car_model['vertices'])
             car_model['faces'] = np.array(car_model['faces'])
             self.car_models[model.name] = car_model

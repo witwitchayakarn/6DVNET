@@ -142,7 +142,8 @@ def convert_pose_mat_to_6dof(pose_file_in, pose_file_out):
         pose_file_out: output file save the converted results
     """
 
-    poses = [line for line in open(pose_file_in)]
+    with open(pose_file_in, 'r') as f:
+        poses = [line for line in f]
     output_motion = np.zeros((len(poses), 6))
     f = open(pose_file_out, 'w')
     for i, line in enumerate(poses):
