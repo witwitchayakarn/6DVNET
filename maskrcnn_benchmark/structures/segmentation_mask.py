@@ -200,6 +200,10 @@ class SegmentationMask(object):
                 item = item.nonzero()
                 item = item.squeeze(1) if item.numel() > 0 else item
                 item = item.tolist()
+            if isinstance(item, torch.Tensor) and item.dtype == torch.bool:
+                item = item.nonzero()
+                item = item.squeeze(1) if item.numel() > 0 else item
+                item = item.tolist()
             for i in item:
                 selected_polygons.append(self.polygons[i])
         return SegmentationMask(selected_polygons, size=self.size, mode=self.mode)
