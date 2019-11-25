@@ -7,14 +7,24 @@ import os
 class DatasetCatalog(object):
     DATA_DIR = "datasets"
     DATASETS = {
+        "peku_3d_car_train": {
+            "dataset_dir": "/home/wit/6dvnet/peku/train",
+        },
+        "peku_3d_car_val": {
+            "dataset_dir": "/home/wit/6dvnet/peku/train",
+        },
+        "peku_3d_car_test": {
+            "dataset_dir": "/home/wit/6dvnet/peku/test",
+        },
+
         "Apollo_3d_car_train": {
-            "dataset_dir": "/media/SSD_1TB/ApolloScape/ECCV2018_apollo/train",
+            "dataset_dir": "/home/wit/6dvnet/apollo/train",
         },
         "Apollo_3d_car_val": {
-            "dataset_dir": "/media/SSD_1TB/ApolloScape/ECCV2018_apollo/train",
+            "dataset_dir": "/home/wit/6dvnet/apollo/train",
         },
         "Apollo_3d_car_test": {
-            "dataset_dir": "/media/SSD_1TB/ApolloScape/ECCV2018_apollo/test",
+            "dataset_dir": "/home/wit/6dvnet/apollo/test",
         },
 
         "Pascal3d+_train": {"dataset_dir": "/media/SSD_1TB/PASCAL3D+_release1.1",},
@@ -172,6 +182,14 @@ class DatasetCatalog(object):
                 args=args,
             )
         elif "Apollo_3d_car" in name:
+            attrs = DatasetCatalog.DATASETS[name]
+            args = dict(dataset_dir=attrs['dataset_dir'],
+                        list_flag=name.split('_')[-1])
+            return dict(
+                factory='Car3D',
+                args=args,
+            )
+        elif "peku_3d_car" in name:
             attrs = DatasetCatalog.DATASETS[name]
             args = dict(dataset_dir=attrs['dataset_dir'],
                         list_flag=name.split('_')[-1])

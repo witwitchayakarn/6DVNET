@@ -65,7 +65,14 @@ class CarPoseVisualizer(object):
             #     self.car_models[model.name] = pkl.load(f)
             #
             # This is a python 3 compatibility
-            self.car_models[model.name] = pkl.load(open(car_model, "rb"), encoding='latin1')
+            #self.car_models[model.name] = pkl.load(open(car_model, "rb"), encoding='latin1')
+            car_model_dpath = self._data_config['car_model_dir'][:-1] + '_json'
+            car_model_fpath = '%s/%s.json' % (car_model_dpath, model.name)
+            car_model = json.load(open(car_model_fpath, "r"))
+            car_model['vertices'] = np.array(car_model['vertices'])
+            car_model['faces'] = np.array(car_model['faces'])
+            self.car_models[model.name] = car_model
+
             # fix the inconsistency between obj and pkl
             self.car_models[model.name]['vertices'][:, [0, 1]] *= -1
             # print("Vertice number is: %d" % len(self.car_models[model.name]['vertices']))
@@ -187,7 +194,8 @@ class CarPoseVisualizer(object):
         """
 
         car_pose_file = '%s/%s.json' % (self._data_config['pose_dir'], image_name)
-        car_pose_file = '/media/SSD_1TB/ApolloScape/ECCV2018_apollo/train/'+'%s.json' % image_name
+        #car_pose_file = '/media/SSD_1TB/ApolloScape/ECCV2018_apollo/train/'+'%s.json' % image_name
+        car_pose_file = '/home/wit/6dvnet/peku/train/car_poses/'+'%s.json' % image_name
         with open(car_pose_file) as f:
             car_poses = json.load(f)
         image_file = '%s/%s.jpg' % (self._data_config['image_dir'], image_name)
@@ -533,9 +541,9 @@ if __name__ == '__main__':
     pose_file_in = './test_files/%s.poses' % args.image_name
     pose_file_out = './test_files/%s.json' % args.image_name
     label_resaver = LabelResaver(args)
-    label_resaver.convert(pose_file_in, pose_file_out)
+    #label_resaver.convert(pose_file_in, pose_file_out)
 
     print('Test visualizer')
     visualizer = CarPoseVisualizer(args)
     visualizer.load_car_models()
-    visualizer.showAnn(args.image_name)
+    visualizer.showAnn(args.image_name, 'tmp', '/home/wit/6dvnet/')
