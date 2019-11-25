@@ -67,8 +67,6 @@ def do_train(
         iteration = iteration + 1
         arguments["iteration"] = iteration
 
-        scheduler.step()
-
         images = images.to(device)
         targets = [target.to(device) for target in targets]
 
@@ -78,6 +76,7 @@ def do_train(
         losses = sum([v for (k, v) in loss_dict.items() if k.split('/')[-1][:4] == 'loss'])
         losses.backward()
         optimizer.step()
+        scheduler.step()
 
         # reduce losses over all GPUs for logging purposes
         loss_dict_reduced = reduce_loss_dict(loss_dict)

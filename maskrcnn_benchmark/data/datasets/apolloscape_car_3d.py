@@ -41,7 +41,6 @@ class Car3D(torch.utils.data.Dataset):
         self.dataset_dir = dataset_dir
         self.list_flag = list_flag
         self.transforms = transforms
-        self.img_list_all = []
         self.training = training
 
         # Apollo 3d init
@@ -62,6 +61,8 @@ class Car3D(torch.utils.data.Dataset):
         self.classes = ['__background__'] + [c for c in self.eval_cat]
         self.masker = Masker(threshold=0.5, padding=1)
 
+        self.img_list_all = self.get_img_list()
+
     def get_img_list(self):
         """
         Get the image list,
@@ -75,19 +76,19 @@ class Car3D(torch.utils.data.Dataset):
             train_list_delete = []
             print("Train delete %d images" % len(train_list_delete))
 
-            self.img_list_all = [x for x in train_list_all if x not in train_list_delete]
+            img_list_all = [x for x in train_list_all if x not in train_list_delete]
         elif self.list_flag == "val":
             valid_list_all = [line.rstrip('\n')[:-4] for line in open(os.path.join(self.dataset_dir, 'split', 'validation-list.txt'))]
             #val_list_delete = [line.rstrip('\n') for line in open(os.path.join(self.dataset_dir, 'split', 'Mesh_overlay_val_error_delete.txt'))]
             val_list_delete = []
-            self.img_list_all = [x for x in valid_list_all if x not in val_list_delete]
+            img_list_all = [x for x in valid_list_all if x not in val_list_delete]
             print("Val delete %d images." % len(val_list_delete))
 
         elif self.list_flag == 'test':
             im_list = os.listdir(os.path.join(self.dataset_dir, 'images'))
-            self.img_list_all = [x[:-4] for x in im_list]
+            img_list_all = [x[:-4] for x in im_list]
 
-        return self.img_list_all
+        return img_list_all
 
     def load_car_models(self):
         """Load all the car models
@@ -130,7 +131,7 @@ class Car3D(torch.utils.data.Dataset):
         return intrinsic_mat
 
     def __len__(self):
-        return len(self.get_img_list())
+        return len(self.img_list_all)
 
     def __getitem__(self, idx):
 
@@ -170,7 +171,7 @@ class Car3D(torch.utils.data.Dataset):
 
         car_pose_file = os.path.join(self.dataset_dir, 'car_poses', self.img_list_all[idx] + '.json')
         assert os.path.exists(car_pose_file), 'Label \'{}\' not found'.format(car_pose_file)
-        with open(car_pose_file) as f:
+        with open(car_pose_file, 'r') as f:
             car_poses = json.load(f)
 
         for i, car_pose in enumerate(car_poses):
