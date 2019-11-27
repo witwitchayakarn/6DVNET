@@ -22,7 +22,7 @@ from collections import defaultdict
 import itertools
 from pycocotools import mask as maskUtils
 from tqdm import tqdm
-
+from pyquaternion import Quaternion
 
 def _isArrayLike(obj):
     return hasattr(obj, '__iter__') and hasattr(obj, '__len__')
@@ -169,6 +169,9 @@ class Car3D(torch.utils.data.Dataset):
 
     def _add_gt_annotations_Car3d(self, idx, image_shape, im_scale):
         """Add ground truth annotation metadata to an roidb entry."""
+
+        morph_ellipse_kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5,5))
+
         # initiate the lists
         masks = []
         segms = []
@@ -184,11 +187,15 @@ class Car3D(torch.utils.data.Dataset):
         f.close()
 
         car_poses = json.loads(data)
-
         for i, car_pose in enumerate(car_poses):
             car_name = self.car_id2name[car_pose['car_id']].name
             car = self.car_models[car_name]
             pose = np.array(car_pose['pose'])
+
+            # Fix for kaggle pku-autonomous-driving
+            yaw, pitch, roll = pose[:3]
+            yaw, pitch, roll = -pitch, -yaw, -roll
+            pose[:3] = yaw, pitch, roll
 
             # project 3D points to 2d image plane
             rot_mat = euler_angles_to_rotation_matrix(pose[:3])
@@ -209,6 +216,9 @@ class Car3D(torch.utils.data.Dataset):
             ground_truth_binary_mask[mask == 255] = 1
             if self.cfg['INPUT']['BOTTOM_HALF']:
                 ground_truth_binary_mask = ground_truth_binary_mask[int(mask.shape[0]/2):, :]
+
+            ground_truth_binary_mask = cv2.morphologyEx(ground_truth_binary_mask, cv2.MORPH_CLOSE, morph_ellipse_kernel)
+
             fortran_ground_truth_binary_mask = np.asfortranarray(ground_truth_binary_mask)
             encoded_ground_truth = maskUtils.encode(fortran_ground_truth_binary_mask)
 
@@ -230,10 +240,12 @@ class Car3D(torch.utils.data.Dataset):
                 y2 -= int(image_shape[1]/2)
             boxes.append([x1, y1, x2, y2])
 
-            q = euler_angles_to_quaternions(np.array(car_pose['pose'][:3]))[0]
+            #q = euler_angles_to_quaternions(np.array(car_pose['pose'][:3]))[0]
+            q = Quaternion(matrix=rot_mat).q
             if self.cfg['MODEL']['ROI_CAR_CLS_ROT_HEAD']['QUATERNION_HEMISPHERE']:
                 q = quaternion_upper_hemispher(q)
             quaternions.append(q)
+
             car_cat_classes.append(np.where(self.unique_car_models == car_pose['car_id'])[0][0])
             poses.append(car_pose['pose'])
 
