@@ -59,8 +59,8 @@ def parse_args():
     return parser.parse_args()
 
 
-def train(cfg, local_rank, distributed, use_tensorboard=False, logger=None):
-    arguments = {"iteration": 0}
+def train(cfg, local_rank, distributed, use_tensorboard=False, logger=None, start_iter=0):
+    arguments = {"iteration": start_iter}
     data_loader = make_data_loader(
         cfg,
         is_train=True,
@@ -166,6 +166,7 @@ def main():
         distributed=args.distributed,
         use_tensorboard=args.use_tensorboard,
         logger=logger,
+        start_iter=args.start_step
     )
 
 
