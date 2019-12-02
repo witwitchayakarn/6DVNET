@@ -77,7 +77,7 @@ def train(cfg, local_rank, distributed, use_tensorboard=False, logger=None, star
             p.requires_grad = True
 
     optimizer = make_optimizer(cfg, model)
-    scheduler = make_lr_scheduler(cfg, optimizer)
+    scheduler = make_lr_scheduler(cfg, optimizer, start_iter)
 
     if distributed:
         model = torch.nn.parallel.DistributedDataParallel(
@@ -96,7 +96,7 @@ def train(cfg, local_rank, distributed, use_tensorboard=False, logger=None, star
 
     if cfg.SOLVER.KEEP_LR:
         optimizer = make_optimizer(cfg, model)
-        scheduler = make_lr_scheduler(cfg, optimizer)
+        scheduler = make_lr_scheduler(cfg, optimizer, start_iter)
 
     checkpoint_period = cfg.SOLVER.CHECKPOINT_PERIOD
     tensorboard_logdir = cfg.OUTPUT_DIR
