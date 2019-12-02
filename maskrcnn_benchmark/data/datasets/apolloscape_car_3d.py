@@ -161,6 +161,9 @@ class Car3D(torch.utils.data.Dataset):
 
         if self.list_flag in ['train', 'val']:
             target = self._add_gt_annotations_Car3d(idx, image_shape, im_scale)
+        else:
+            boxes = [[0, 0, 100, 100]]
+            target = BoxList(boxes, (image_shape[0], int(image_shape[1]/2)), mode="xyxy")
 
         if self.transforms is not None:
             img, target = self.transforms(img, target)

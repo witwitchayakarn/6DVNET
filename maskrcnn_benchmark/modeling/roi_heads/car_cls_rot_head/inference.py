@@ -1,4 +1,6 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
+import numpy as np
+
 import torch
 from torch import nn
 
@@ -42,12 +44,22 @@ class CarClsRotPostProcessor(nn.Module):
         cls_label = torch.argmax(cls, dim=1)
         cls_score = cls[index, cls_label][:, None]
 
+        results = []
+
         boxes_per_image = [len(box) for box in boxes]
+        if np.all(np.array(boxes_per_image) == 0):
+            bbox = BoxList([[0, 0, 0, 0]], (0, 0), mode="xyxy")
+            bbox.add_field("cls_score", 0.0)
+            bbox.add_field("cls", 0)
+            bbox.add_field("rot_pred", [0.0, 0.0, 0.0, 0.0])
+            results.append(bbox)
+            return results
+
         cls_label = cls_label.split(boxes_per_image, dim=0)
         cls_score = cls_score.split(boxes_per_image, dim=0)
         rot_pred = rot_pred.split(boxes_per_image, dim=0)
 
-        results = []
+
         for label, score, rot, box in zip(cls_label, cls_score, rot_pred, boxes):
             bbox = BoxList(box.bbox, box.size, mode="xyxy")
             for field in box.fields():

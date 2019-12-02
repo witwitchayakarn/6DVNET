@@ -1,3 +1,5 @@
+import torch
+
 from torch import nn
 from torch.nn import functional as F
 from ..box_head.roi_box_feature_extractors import ResNet50Conv5ROIFeatureExtractor
@@ -39,7 +41,10 @@ class FPN2MLP2FeatureExtractor(nn.Module):
     def forward(self, x, proposals, train=True):
         if not train or not self.cfg.MODEL.ROI_MASK_HEAD.SHARE_BOX_FEATURE_EXTRACTOR:
             x = self.pooler(x, proposals)
-        x = x.view(x.size(0), -1)
+        try:
+            x = x.view(x.size(0), -1)
+        except:
+            x = torch.zeros((1, x.size(1)*x.size(2)*x.size(3))).to(x.device)
 
         x = F.relu(self.fc6_bn(self.fc6(x)), inplace=True)
         x = F.relu(self.fc7_bn(self.fc7(x)), inplace=True)
