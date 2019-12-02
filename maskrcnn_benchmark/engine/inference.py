@@ -92,6 +92,7 @@ def inference(
             return
         if output_folder:
             torch.save(predictions, os.path.join(output_folder, "predictions.pth"))
+            torch.save(dataset.img_list_all, os.path.join(output_folder, "img_list_all.pth"))
 
     extra_args = dict(
         box_only=box_only,
