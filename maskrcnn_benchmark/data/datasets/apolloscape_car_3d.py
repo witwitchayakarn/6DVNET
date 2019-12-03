@@ -152,9 +152,11 @@ class Car3D(torch.utils.data.Dataset):
 
         # We also change the size of image very iteration:
         if self.training:
-            resize_size = np.random.randint(self.cfg['INPUT']['MIN_SIZE_TRAIN_RANGE'][0], self.cfg['INPUT']['MIN_SIZE_TRAIN_RANGE'][1])
-            self.transforms.transforms[0].min_size = resize_size
-            im_scale = float(resize_size) / float(min(img.size))
+            #resize_size = np.random.randint(self.cfg['INPUT']['MIN_SIZE_TRAIN_RANGE'][0], self.cfg['INPUT']['MIN_SIZE_TRAIN_RANGE'][1])
+            #self.transforms.transforms[0].min_size = resize_size
+            #im_scale = float(resize_size) / float(min(img.size))
+            self.transforms.transforms[0].min_size = self.cfg['INPUT']['MIN_SIZE_TRAIN']
+            im_scale = 1.0
         else:
             self.transforms.transforms[0].min_size = self.cfg['INPUT']['MIN_SIZE_TEST']
             im_scale = 1.0

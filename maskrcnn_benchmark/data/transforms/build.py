@@ -17,12 +17,23 @@ def build_transforms(cfg, is_train=True):
         mean=cfg.INPUT.PIXEL_MEAN, std=cfg.INPUT.PIXEL_STD, to_bgr255=to_bgr255
     )
 
-    transform = T.Compose(
-        [
-            T.Resize(min_size, max_size),
-            T.RandomHorizontalFlip(flip_prob),
-            T.ToTensor(),
-            normalize_transform,
-        ]
-    )
+    if is_train:
+        transform = T.Compose(
+            [
+                T.Resize(min_size, max_size),
+                #T.RandomHorizontalFlip(flip_prob),
+                T.RandomTransformPixels(),
+                T.ToTensor(),
+                normalize_transform,
+            ]
+        )
+    else:
+        transform = T.Compose(
+            [
+                T.Resize(min_size, max_size),
+                T.ToTensor(),
+                normalize_transform,
+            ]
+        )
+
     return transform
