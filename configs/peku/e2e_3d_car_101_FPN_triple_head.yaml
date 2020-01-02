@@ -1,6 +1,6 @@
 MODEL:
   META_ARCHITECTURE: "GeneralizedRCNN"
-  WEIGHT: "/home/wit/6dvnet/output/e2e_3d_car_101_FPN_triple_head/Dec03-09-34_instance-2_step/model_0003000.pth"
+  WEIGHT: "/home/wit/6dvnet/output/e2e_3d_car_101_FPN_triple_head/Dec03-09-12_instance-2_step/model_0054000.pth"
 #  WEIGHT: "catalog://ImageNetPretrained/MSRA/R-101"
   BACKBONE:
     CONV_BODY: "R-101-FPN"
@@ -77,8 +77,8 @@ INPUT:
   MAX_SIZE_TRAIN: 3384
   MIN_SIZE_TEST: 900
   MAX_SIZE_TEST: 3384
-  PIXEL_MEAN: [0.40384353, 0.45469216, 0.48145765]
-  TO_BGR255: False
+#  PIXEL_MEAN: [0.40384353, 0.45469216, 0.48145765]
+#  TO_BGR255: False
 
 DATALOADER:
   SIZE_DIVISIBILITY: 32
